@@ -1,0 +1,182 @@
+﻿@*@using static BlazorApp1.Shared.MainLayout
+@using static BlazorApp1.Tabs.TabMain
+@using Syncfusion.Blazor.Cards
+
+<h3 class="titletab">Analisis de venta por bodega</h3>
+
+
+
+<div class="card-container">
+    <SfCard class="e-card cardpy">
+        <div class="container title-cardpy">Registros</div>
+        <CardContent>
+            <div class="container">
+                @sFather.bodegaRegistros
+            </div>
+        </CardContent>
+    </SfCard>
+    <SfCard class="e-card cardpy">
+        <div class="container title-cardpy">Cantidad</div>
+        <CardContent>
+            <div class="container">
+                @sFather.Cantidades.ToString("N")
+            </div>
+        </CardContent>
+    </SfCard>
+
+    <SfCard class="e-card cardpy">
+        <div class="container title-cardpy">Subtotal</div>
+        <CardContent>
+            <div class="container">
+                @sFather.Subtotales.ToString("C")
+            </div>
+        </CardContent>
+    </SfCard>
+
+    <SfCard class="e-card cardpy">
+        <div class="container title-cardpy">Descuento</div>
+        <CardContent>
+            <div class="container">
+                @sFather.Descuentos.ToString("C")
+            </div>
+        </CardContent>
+    </SfCard>
+
+
+    <SfCard class="e-card cardpy">
+        <div class="container title-cardpy">Iva</div>
+        <CardContent>
+            <div class="container">
+                @sFather.Iva.ToString("C")
+            </div>
+        </CardContent>
+    </SfCard>
+
+    <SfCard class="e-card cardpy">
+        <div class="container title-cardpy">Total</div>
+        <CardContent>
+            <div class="container">
+                @sFather.Totales.ToString("C")
+            </div>
+        </CardContent>
+    </SfCard>
+
+    <SfButton CssClass="BtnExport" OnClick="ExcelExport" Content="Excel"></SfButton>
+</div>
+
+<SfChart>
+    <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category"></ChartPrimaryXAxis>
+    <ChartSeriesCollection>
+        <ChartSeries DataSource="@sFather.bodega" XName="nom_bod" YName="neto" Type="ChartSeriesType.SplineArea">            
+        </ChartSeries>
+</ChartSeriesCollection>
+</SfChart>
+
+
+@if (sFather.bodega == null)
+{
+    <p>
+        no existen bodega
+    </p>
+}
+else
+{
+    <SfGrid @ref="DefaultGrid" DataSource="@sFather.bodega" AllowPaging="true" AllowSorting="true" AllowExcelExport="true">
+        <GridColumns>
+            <GridColumn Field=@nameof(Bodega.cod_bod) HeaderText="Codigo" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="80" />
+            <GridColumn Field=@nameof(Bodega.nom_bod) HeaderText="Bodega" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="120" />
+            <GridColumn Field=@nameof(Bodega.cantidad) HeaderText="Cnt Vta" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+            <GridColumn Field=@nameof(Bodega.can_dev) HeaderText="Cnt Dev" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+            <GridColumn Field=@nameof(Bodega.neto) HeaderText="Neto" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+            <GridColumn Field=@nameof(Bodega.subtotal) HeaderText="Subtotal" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+            <GridColumn Field=@nameof(Bodega.val_des) HeaderText="Descuento" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+            <GridColumn Field=@nameof(Bodega.val_iva) HeaderText="Iva" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+            <GridColumn Field=@nameof(Bodega.total) HeaderText="Total" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+        </GridColumns>
+    </SfGrid>
+}
+
+
+
+
+@code {
+
+    [CascadingParameter]
+    public Pshared sFather { get; set; }
+
+    public int Registros = 0;
+    public decimal Cantidades = 0;
+
+
+    private SfGrid<Bodega> DefaultGrid;
+
+
+    public async Task ExcelExport()
+    {
+        ExcelExportProperties ExcelProperties = new ExcelExportProperties();
+        ExcelTheme Theme = new ExcelTheme();
+
+        ExcelStyle ThemeStyle = new ExcelStyle()
+        {
+            FontName = "Segoe UI",
+            FontColor = "#666666",
+            FontSize = 12
+        };
+
+        Theme.Header = ThemeStyle;
+        Theme.Record = ThemeStyle;
+        Theme.Caption = ThemeStyle;
+        ExcelProperties.Theme = Theme;
+        await DefaultGrid.ExcelExport(ExcelProperties);
+    }
+
+}
+
+<style>
+
+    /*tr{
+        background: var(--MainColor);
+        color: white;
+    } */
+
+    .e-columnheader th {
+        background-color: whitesmoke !important;
+        color: black !important;
+    }
+
+    .titletab {
+        color: #0078d6;
+        margin: 10px;
+        font-weight: lighter;
+    }
+
+    .e-card-header-title {
+        padding-left: 10% !important;
+    }
+
+    .container {
+        text-align: center;
+    }
+
+    .title-cardpy {
+        color: var(--MainColor);
+        font-weight: bolder;
+    }
+
+    .BtnExport {
+        height: 50px;
+        align-self: center;
+        margin-right: 10px;
+        background: var(--MainColor);
+        color: white;
+    }
+
+    .cardpy {
+        margin: 5px !important;
+        position: inherit
+    }
+
+    .card-container {
+        display: flex;
+    }
+</style>*@

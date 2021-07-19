@@ -1,0 +1,33 @@
+﻿body {
+}
+
+.txtitle {
+    text-align: right;
+    color: black;
+    font-weight: bold;
+    margin: auto;
+}
+.txcenter {
+    text-align: center;
+}
+
+.txvalue {
+    margin: 2px 0px 2px 0px;
+}
+
+.spacebtn {
+    margin-top: 10px;
+}
+
+.BtnStlye {
+    width: 100%;
+}
+
+.BtnSearch {
+    width: 40px;
+}
+
+
+.e-search::before {
+    content: '\e275';
+}

@@ -1,0 +1,239 @@
+﻿@using System.Dynamic;
+
+<h3 class="titletab">@title</h3>
+
+<div class="card-container">
+    <SfCard class="e-card cardpy">
+        <div class="container title-cardpy">Registros</div>
+        <CardContent>
+            <div class="container">
+                @Registros.ToString("N")
+            </div>
+        </CardContent>
+    </SfCard>
+    <SfCard class="e-card cardpy">
+        <div class="container title-cardpy">Cantidad</div>
+        <CardContent>
+            <div class="container">
+                @Cantidad.ToString("N")
+            </div>
+        </CardContent>
+    </SfCard>
+
+    <SfCard class="e-card cardpy">
+        <div class="container title-cardpy">Subtotal</div>
+        <CardContent>
+            <div class="container">
+                @Subtotal.ToString("C")
+            </div>
+        </CardContent>
+    </SfCard>
+
+    <SfCard class="e-card cardpy">
+        <div class="container title-cardpy">Descuento</div>
+        <CardContent>
+            <div class="container">
+                @ValDes.ToString("C")
+            </div>
+        </CardContent>
+    </SfCard>
+
+
+    <SfCard class="e-card cardpy">
+        <div class="container title-cardpy">Iva</div>
+        <CardContent>
+            <div class="container">
+                @ValIva.ToString("C")
+            </div>
+        </CardContent>
+    </SfCard>
+
+    <SfCard class="e-card cardpy">
+        <div class="container title-cardpy">Total</div>
+        <CardContent>
+            <div class="container">
+                @Total.ToString("C")
+            </div>
+        </CardContent>
+    </SfCard>
+
+    <SfButton CssClass="BtnExport" OnClick="ExcelExport" Content="Excel"></SfButton>
+</div>
+
+
+@if (SourceDataGrid == null)
+{
+    <p>
+        no existen productos
+    </p>
+}
+else
+{
+    <SfGrid @ref="DefaultGrid" DataSource="SourceDataGrid" AllowPaging="false" AllowSorting="true" AllowExcelExport="true" AllowGrouping="true" AllowFiltering="true" AllowResizing="true">
+        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.CheckBox"></GridFilterSettings>
+        <GridEvents QueryCellInfo="CellInfoHandler" TValue="ExpandoObject">
+        </GridEvents>
+        <GridColumns>
+            <GridColumn Field="@codigo" HeaderText="Codigo" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="80" />
+            <GridColumn Field="@nombre" HeaderText="Nombre" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="120" />
+            <GridColumn Field="cantidad" HeaderText="Cnt Vta" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+            <GridColumn Field="can_dev" HeaderText="Cnt Dev" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+            <GridColumn Field="neto" HeaderText="Neto" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+            <GridColumn Field="subtotal" HeaderText="Subtotal" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+            <GridColumn Field="val_des" HeaderText="Descuento" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+            <GridColumn Field="val_iva" HeaderText="Iva" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+            <GridColumn Field="total" HeaderText="Total" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="100" />
+        </GridColumns>
+    </SfGrid>
+}
+
+
+@code {
+
+    [Parameter]
+    public string title { get; set; } = "";
+
+    [Parameter]
+    public List<ExpandoObject> SourceDataGrid { get; set; } = new List<ExpandoObject>();
+
+    [Parameter]
+    public string codigo { get; set; }
+
+    [Parameter]
+    public string nombre { get; set; }
+
+    public SfGrid<System.Dynamic.ExpandoObject> DefaultGrid;
+
+    public void CellInfoHandler(QueryCellInfoEventArgs<ExpandoObject> Args)
+    {
+        var FilterCols = DefaultGrid.FilterSettings?.Columns; // will provide filtered column details.
+
+        if (FilterCols?.Count > 0) // when column is filtered
+        {
+
+
+            //var RowsData = DefaultGrid.CurrentViewData;
+            var RowsData = DefaultGrid.GetCurrentViewRecords();
+            //var RowsData = await DefaultGrid.GetDataRows();
+
+            foreach (var item in RowsData.Result)
+            {                
+                Console.WriteLine("a:" + item.GetType().GetProperties());                
+                var a = (double)((IDictionary<string, object>)item)["neto"];
+                Console.WriteLine("a:"+a);
+            }
+
+            Console.WriteLine("filtrado:");
+
+            //for (var i = 0; i < FilterCols.Count; i++) // loop the for multiple filtered column
+            //{
+            //    Console.WriteLine("socio:"+ FilterCols[i].Field);
+
+            //    if (Args.Column.Field == FilterCols[i].Field) // check with current column
+            //    {
+            //        Console.WriteLine("FilterCols[i].Field:" + FilterCols[i].Field);
+            //    }
+            //}
+        }
+    }
+
+    public double Registros { get; set; } = 0;
+    public double Cantidad { get; set; } = 0;
+    public double Subtotal { get; set; } = 0;
+    public double ValDes { get; set; } = 0;
+    public double ValIva { get; set; } = 0;
+    public double Total { get; set; } = 0;
+
+
+
+
+    protected override void OnParametersSet()
+    {
+        try
+        {
+
+            if (SourceDataGrid != null)
+            {
+                Registros = SourceDataGrid.Count;
+                Cantidad = SourceDataGrid.Sum(item => (double)((IDictionary<string, object>)item)["neto"]);
+                Subtotal = SourceDataGrid.Sum(item => (double)((IDictionary<string, object>)item)["subtotal"]);
+                ValIva = SourceDataGrid.Sum(item => (double)((IDictionary<string, object>)item)["val_iva"]);
+                ValDes = SourceDataGrid.Sum(item => (double)((IDictionary<string, object>)item)["val_des"]);
+                Total = SourceDataGrid.Sum(item => (double)((IDictionary<string, object>)item)["total"]);
+            }
+        }
+        catch (Exception w)
+        {
+            Console.WriteLine("error al fijar un parametro:" + w);
+        }
+    }
+
+
+    public async Task ExcelExport()
+    {
+
+        ExcelExportProperties ExcelProperties = new ExcelExportProperties();
+        ExcelTheme Theme = new ExcelTheme();
+
+        ExcelStyle ThemeStyle = new ExcelStyle()
+        {
+            FontName = "Segoe UI",
+            FontColor = "#666666",
+            FontSize = 12
+        };
+
+        Theme.Header = ThemeStyle;
+        Theme.Record = ThemeStyle;
+        Theme.Caption = ThemeStyle;
+        ExcelProperties.Theme = Theme;
+        await DefaultGrid.ExcelExport(ExcelProperties);
+    }
+
+
+
+
+}
+
+<style>
+
+    .e-columnheader th {
+        background-color: whitesmoke !important;
+        color: black !important;
+    }
+
+    .titletab {
+        color: #0078d6;
+        margin: 10px;
+        font-weight: lighter;
+    }
+
+    .e-card-header-title {
+        padding-left: 10% !important;
+    }
+
+    .container {
+        text-align: center;
+    }
+
+    .title-cardpy {
+        color: var(--MainColor);
+        font-weight: bolder;
+    }
+
+    .BtnExport {
+        height: 50px;
+        align-self: center;
+        margin-right: 10px;
+        background: var(--MainColor);
+        color: white;
+    }
+
+    .cardpy {
+        margin: 5px !important;
+        position: inherit
+    }
+
+    .card-container {
+        display: flex;
+    }
+</style>

@@ -1,0 +1,210 @@
+﻿@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Spinner
+
+
+
+<SfTab CssClass="e-background e-accent" @bind-SelectedItem="@SelectedTab">
+    <TabItems>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Configuracion"></TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+                <PopUp @ref="TabPopUp" ClickBtn="@((args) => ClickLoadMessage(args.Item1,args.Item2))" />
+                <div class="div_contenedor">
+                    <div class="div_centrado">
+                        <SfCard ID="BasicCard" class="e-card">
+                            <CardHeader Title="Filtros de consulta" />
+                            <CardContent>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-sm"></div>
+                                        <div class="col-sm txcenter">Desde</div>
+                                        <div class="col-sm txcenter">Hasta</div>
+                                        <div class="col-sm"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm txtitle">Fecha :</div>
+                                        <div class="col-sm-3">
+                                            <div id="datepicker-control" class="txvalue">
+                                                <SfDatePicker TValue="DateTime?" @bind-Value="@fecini" Placeholder="Choose a Date" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div id="datepicker-control" class="txvalue">
+                                                <SfDatePicker TValue="DateTime?" @bind-Value="@fecfin" Placeholder="Choose a Date" CssClass="TxValue" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm txtitle">Referencia :</div>
+                                        <div class="col-sm-3 txvalue">
+                                            <SfTextBox Placeholder='referencia ini' @bind-Value="@Ref_ini" />
+                                        </div>
+                                        <div class="col-sm-3 txvalue">
+                                            <SfTextBox Placeholder='referencia fin' @bind-Value="@Ref_fin" />
+                                        </div>
+                                        <div class="col-sm">
+                                            <SfButton IsPrimary="true" CssClass="BtnSearch" IconCss="e-icons e-search" OnClick="@(() => BtnOpenSearch("referencia"))" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm txtitle">Bodega :</div>
+                                        <div class="col-sm-3 txvalue">
+                                            <SfTextBox Placeholder='bodega ini' @bind-Value="@Bod_ini" />
+                                        </div>
+                                        <div class="col-sm-3 txvalue">
+                                            <SfTextBox Placeholder='bodega fin' @bind-Value="@Bod_fin" />
+                                        </div>
+                                        <div class="col-sm txvalue">
+                                            <SfButton IsPrimary="true" CssClass="BtnSearch" IconCss="e-icons e-search" OnClick="@(() => BtnOpenSearch("bodega") )" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm txtitle">Cliente :</div>
+                                        <div class="col-sm-3 txvalue">
+                                            <SfTextBox Placeholder='cliente ini' @bind-Value="@Cli_ini" />
+                                        </div>
+                                        <div class="col-sm-3 txvalue">
+                                            <SfTextBox Placeholder='cliente fin' @bind-Value="@Cli_fin" />
+                                        </div>
+                                        <div class="col-sm ">
+                                            <SfButton IsPrimary="true" CssClass="BtnSearch" IconCss="e-icons e-search" OnClick="@(() => BtnOpenSearch("cliente"))" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm txtitle">Vendedor :</div>
+                                        <div class="col-sm-3 txvalue">
+                                            <SfTextBox Placeholder='vendedor ini' @bind-Value="@Ven_ini" />
+                                        </div>
+                                        <div class="col-sm-3 txvalue">
+                                            <SfTextBox Placeholder='vendedor fin' @bind-Value="@Ven_fin" />
+                                        </div>
+                                        <div class="col-sm">
+                                            <SfButton IsPrimary="true" CssClass="BtnSearch" IconCss="e-icons e-search" OnClick="@(() => BtnOpenSearch("vendedor"))" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm txtitle">Linea :</div>
+                                        <div class="col-sm-3 txvalue">
+                                            <SfTextBox Placeholder='linea ini' @bind-Value="@Lin_ini" />
+                                        </div>
+                                        <div class="col-sm-3 txvalue">
+                                            <SfTextBox Placeholder='linea fin' @bind-Value="@Lin_fin" />
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <SfButton IsPrimary="true" CssClass="BtnSearch" IconCss="e-icons e-search" OnClick="@(() => BtnOpenSearch("linea"))" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm txtitle">Grupos :</div>
+                                        <div class="col-sm-3 txvalue">
+                                            <SfTextBox Placeholder='grupo ini' @bind-Value="@Gru_ini" />
+                                        </div>
+                                        <div class="col-sm-3 txvalue">
+                                            <SfTextBox Placeholder='grupo fin' @bind-Value="@Gru_fin" />
+                                        </div>
+                                        <div class="col-sm">
+                                            <SfButton IsPrimary="true" CssClass="BtnSearch" IconCss="e-icons e-search" OnClick="@(() => BtnOpenSearch("grupo"))" />
+                                        </div>
+                                    </div>
+                                    <div class="row spacebtn">
+                                        <div class="col-sm">
+
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <SfButton IsPrimary="true" @onclick="ClickEvent" CssClass="BtnStlye">Consultar</SfButton>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <SfButton IsPrimary="true" CssClass="BtnStlye">Salir</SfButton>
+                                        </div>
+                                        <div class="col-sm">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter>
+                            </CardFooter>
+                        </SfCard>
+                    </div>
+                    <div class="spiner">
+                        <SfSpinner Visible="@VisibleProperty" Type="@SpinnerType.Material" Label="Cargando..." />
+                    </div>
+                </div>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Ventas Por Producto"></TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+                <TabContentGeneric title="Ventas por producto" SourceDataGrid="DataGridReferencia" codigo="cod_ref" nombre="nom_ref" />
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Ventas Por Bodega"></TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+                <TabContentGeneric title="Ventas por Bodega" SourceDataGrid="DataGridBodega" codigo="cod_bod" nombre="nom_bod"/>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Ventas Por Cliente"></TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+                <TabContentGeneric title="Ventas por Cliente" SourceDataGrid="DataGridCliente" codigo="cod_cli" nombre="nom_cli"/>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Ventas Por Vendedor"></TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+                <TabContentGeneric title="Ventas por Vendedor" SourceDataGrid="DataGridVendedor" codigo="cod_ven" nombre="nom_ven"/>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Ventas Por Marca"></TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+                <TabContentGeneric title="Ventas por Marca" SourceDataGrid="DataGridMarca" codigo="cod_mar" nombre="nom_mar"/>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Ventas Por Linea"></TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+                <TabContentGeneric title="Ventas por Linea" SourceDataGrid="DataGridLinea" codigo="cod_tip" nombre="nom_tip" />
+            </ContentTemplate>
+        </TabItem>
+    </TabItems>
+</SfTab>
+
+
+
+
+<style>
+
+    .e-card {
+        width: 700px;
+        margin: auto;
+        top: 50px
+    }
+
+    .spiner {
+        top: 300px;
+        position: absolute;
+        left: 50%;
+    }
+</style>
+
+

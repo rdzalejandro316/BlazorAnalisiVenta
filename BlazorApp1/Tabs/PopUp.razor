@@ -1,0 +1,175 @@
+﻿@using System.Dynamic;
+@using System.Data;
+@using System.Text;
+@using Newtonsoft.Json;
+
+<SfDialog Width="400px" IsModal="true" @bind-Visible="PopUpVisible">
+    <DialogTemplates>
+        <Content>
+            <div class="card_popup">
+                <div class="grid-item panel_search">
+                    <SfTextBox @ref="TxSearch" Placeholder='texto a buscar' CssClass="panel_search_margin" />
+                    <SfButton IsPrimary="true" CssClass="BtnSearch" IconCss="e-icons e-search" OnClick="SearchBtn" />
+                </div>
+                <div class="grid-item item">
+                    <SfGrid DataSource="@SourceData" AllowPaging="false" AllowSorting="true" AllowExcelExport="true" AllowGrouping="false" AllowSelection="true">
+                        <GridEvents RowSelected="GetSelectedRecords" TValue="ExpandoObject" />
+                        <GridColumns>
+                            <GridColumn Field="codigo" HeaderText="Codigo" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="70" />
+                            <GridColumn Field="nombre" HeaderText="Nombre" TextAlign="TextAlign.Center" HeaderTextAlign="TextAlign.Center" Width="120" />
+                        </GridColumns>
+                    </SfGrid>
+                </div>
+                <div class="grid-item">
+                    Total Registros : @TotalRegistros
+                    @Message
+                </div>
+                <div class="grid-item panel_btn">
+                    <SfButton IsPrimary="true" CssClass="BtnPopPuP" OnClick="SelectedRow">Seleccionar</SfButton>
+                    <SfButton IsPrimary="true" CssClass="BtnPopPuP" OnClick="ClosePopUp">Salir</SfButton>
+                </div>
+            </div>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+
+@code {
+
+
+    [Parameter]
+    public EventCallback<(string, string)> ClickBtn { get; set; }
+
+    public List<ExpandoObject> SourceData { get; set; }
+
+    private bool PopUpVisible { get; set; } = false;
+    public int TotalRegistros { get; set; } = 0;
+
+    public string Tabla { get; set; }
+    public string Codigo { get; set; }
+    public string Nombre { get; set; }
+    public string Where { get; set; }
+    public string Tipo { get; set; }
+
+    public string ValueSelected { get; set; }
+    public string Message { get; set; } = "";
+
+    SfTextBox TxSearch;
+
+
+    public void GetSelectedRecords(RowSelectEventArgs<ExpandoObject> args)
+    {
+        var data = args.Data as IDictionary<string, object>;
+        ValueSelected = data["codigo"].ToString();
+    }
+
+
+    public void OpenPopUp(string tabla, string codigo, string nombre, string where, string tipo)
+    {
+        PopUpVisible = true;
+        Tabla = tabla;
+        Codigo = codigo;
+        Nombre = nombre;
+        Where = where;
+        Tipo = tipo;
+        SourceData = new List<ExpandoObject>();
+        StateHasChanged();
+    }
+
+    public void ClosePopUp()
+    {
+
+        PopUpVisible = false;
+        StateHasChanged();
+    }
+
+    public void SelectedRow()
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(ValueSelected))
+            {
+                ClickBtn.InvokeAsync((Tipo, ValueSelected));
+                PopUpVisible = false;
+                StateHasChanged();
+            }
+            else
+            {
+                Message = "seleccione un item de la grilla";
+            }
+        }
+        catch (Exception w)
+        {
+            Console.WriteLine("error en SelectedRow:" + w);
+        }
+    }
+
+
+    public void SearchBtn()
+    {
+
+        try
+        {
+
+
+            StringBuilder query = new StringBuilder();
+            query.Append($" select ( select {Codigo} as codigo,{Nombre} as nombre from {Tabla} ");
+            query.Append($" where {Codigo} like '%{TxSearch.Value}%' or {Nombre} like '%{TxSearch.Value}%' {Where} for json PATH) as json ");
+            DataTable dt = SiaConfig.SqlDT(query.ToString());
+            if (dt.Rows.Count > 0)
+            {
+                string json = dt.Rows[0]["json"].ToString();
+                SourceData = JsonConvert.DeserializeObject<List<ExpandoObject>>(json);
+            }
+            else
+            {
+                Console.WriteLine("sin datos");
+            }
+
+
+
+
+        }
+        catch (Exception w)
+        {
+            Console.WriteLine("error al buscar:" + w);
+        }
+    }
+
+
+
+}
+
+<style>
+
+    .card_popup {
+        width: 350px;
+        height: 300px;
+        display: grid;
+        grid-template-rows: 50px auto 30px 50px;
+    }
+
+    .item {
+        background-color: whitesmoke;
+    }
+
+    .panel_search {
+        margin: 10px 0px 5px 10px;
+        display: flex;
+    }
+
+    .panel_search_margin {
+        margin-right: 10px;
+    }
+
+    .panel_btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .BtnPopPuP {
+        width: 120px;
+        margin: 0px 5px 0px 5px;
+    }
+</style>
