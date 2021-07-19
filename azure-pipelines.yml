@@ -11,19 +11,19 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  myproject: 'https://github.com/rdzalejandro316/BlazorAnalisiVenta/blob/master/BlazorApp1/BlazorApp1.csproj'
-
-# steps:
-# - script: dotnet build --configuration $(buildConfiguration)
-#   displayName: 'dotnet build $(buildConfiguration)'
-
-# steps:
-# - script: dotnet build
-#   displayName: 'dotnet build'
+  myproject: 'BlazorApp1/BlazorApp1.csproj'
 
 steps:
-- script: dotnet --version
-  displayName: 'dotnet version'
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'dotnet build $(buildConfiguration)'
+
+
+- task: DotNetCoreCLI@1
+  displayName: 'Build papi...'
+  inputs:
+    command: 'restore'
+    projects: 'BlazorApp1/BlazorApp1.csproj'    
+
 - task: DotNetCoreCLI@2
   displayName: 'Publishing App...'
   inputs:
