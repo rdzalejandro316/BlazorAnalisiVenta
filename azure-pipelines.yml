@@ -16,10 +16,14 @@ variables:
 # steps:
 # - script: dotnet build --configuration $(buildConfiguration)
 #   displayName: 'dotnet build $(buildConfiguration)'
-steps:
-- script: dotnet build
-  displayName: 'dotnet build'
 
+# steps:
+# - script: dotnet build
+#   displayName: 'dotnet build'
+
+steps:
+- script: dotnet --version
+  displayName: 'dotnet version'
 - task: DotNetCoreCLI@2
   displayName: 'Publishing App...'
   inputs:
