@@ -14,16 +14,8 @@ variables:
   myproject: 'BlazorApp1/BlazorApp1.csproj'
 
 steps:          
-- script: dotnet build BlazorApp1/BlazorApp1.csproj --configuration $(buildConfiguration)
+- script: dotnet build $(myproject) --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
-
-
-- task: DotNetCoreCLI@1
-  displayName: 'Build papi...'
-  inputs:
-    command: 'restore'
-    projects: 'BlazorApp1/BlazorApp1.csproj'    
-
 - task: DotNetCoreCLI@2
   displayName: 'Publishing App...'
   inputs:
